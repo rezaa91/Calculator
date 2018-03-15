@@ -1,0 +1,73 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+    font-size:22px;
+}
+
+.wrapper{
+    width:100%;
+    text-align:center;
+    height:100vh;
+}
+
+#screen{
+    border:1px solid black;
+    background-color:grey;
+    color:white;
+    text-align: right;
+    display:inline-block;
+    width:100%;
+    padding:10px 20px;
+    height:20%;
+}
+
+#sum{
+    height:30%;
+    font-size:20px;
+}
+
+#answer{
+    height:70%;
+    font-size:60px;
+}
+
+.btn_wrapper{
+    display:inline-block;
+    width:25%;
+    height:16%;
+}
+
+button{
+    width:stretch;
+    height:stretch;
+    display:inline-block;
+    padding:5px;
+    background-color:white;
+}
+
+
+.equals button{
+    color:white;
+    background-color:red;
+    font-weight:bold;
+}
+
+.signs button{
+    color:white;
+    font-weight:bold;
+    background-color:deepskyblue;
+}
+
+.clear{
+    display:inline-block;
+    width:75%;
+    height:16%;
+}
+.clear button{
+    color:white;
+    background-color:orange;
+    font-weight:bold;
+}
+
