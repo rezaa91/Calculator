@@ -15,6 +15,8 @@ class Btn extends React.Component{
         let btnVal = e.target.textContent; //store btn value in var
         let sumWrapper = document.getElementById('sum'); //cache sum wrapper location
         let displayAnswer = document.getElementById('answer'); //cache answer location
+        let specialChar = document.getElementsByClassName('special_char'); //cache DOM location of special characters
+        let plus_minus = document.getElementsByClassName('plus_minus')[0]; //cache DOM location of +/- char
         
         //revert sum value back to zero
         if(displayAnswer.textContent !== "0"){
@@ -38,35 +40,70 @@ class Btn extends React.Component{
         for(let key in returnVals){
             let obj = returnVals[key];
             for(let prop in obj){
-                if((sumWrapper.textContent === "" && btnVal === obj[prop])){ //return if special char entered before digit
+                if((sumWrapper.textContent === "" && btnVal === obj[prop])){ //'return' if special char entered before digit
                     return;
                 }
             }
         }
         
-        //get +/- location
-        let plus_minus = document.getElementsByClassName('btn_wrapper')[13];
-        //if +/- has been previously made disabled, the undisable it
-        if(plus_minus.firstChild.disabled){
-            plus_minus.firstChild.disabled = false;
+        
+        //undisable all special characters
+        for(let i = 0; i<specialChar.length; i++){
+            specialChar[i].firstChild.disabled = false;
         }
+        plus_minus.firstChild.disabled = false;
         
-        
-        
-        this.printVal(e,btnVal); //print value to sumWrapper
+
+        this.printVal(btnVal); //print value to sumWrapper
     }
     
     
+    
+    
     //print value of btn pressed to sum wrapper
-    printVal = (e,val) => {
+    printVal = (val) => {
         let sumWrapper = document.getElementById('sum'); //cache DOM location to place sum
         let displaySum = document.getElementById('answer'); //cache DOM location of answer
+        let specialChar = document.getElementsByClassName('special_char'); //cache DOM location of special characters
+        let plus_minus = document.getElementsByClassName('plus_minus')[0]; //cache DOM location of +/- char
+        let length = sumWrapper.textContent.length;
         
-        //if value is +/- btn - show negative sign
+        //disable special characters if value is a special character 
+        for(let i = 0; i<specialChar.length; i++){
+            if(val === specialChar[i].firstChild.textContent){
+                for(let i = 0; i<specialChar.length; i++){
+                    specialChar[i].firstChild.disabled = true;
+                }
+            }
+            //if btn pressed after special char is a zero - do not allow any more than 1 zero being pressed and return
+            if(val === '0' && sumWrapper.textContent[length-2] === specialChar[i].firstChild.textContent && sumWrapper.textContent[length-1] === '0'){
+                return;
+            }
+        }
+        
+        
+        
+        for(let i = 0; i < specialChar.length; i++){
+            //if current input val is not a special character incl zero - continue if statement
+            if(val !== specialChar[i].firstChild.textContent && val !== document.getElementsByClassName('equals')[0].firstChild.textContent){
+                
+                //replace zero with new val if cur value is not zero, last btn pressed was zero, and prior to last btn pressed was special char                
+                if(val !== '0' && sumWrapper.textContent[length-1] === '0' && sumWrapper.textContent[length-2] === specialChar[i].firstChild.textContent){
+                    //replace zero with new val
+                    let getZero = sumWrapper.textContent[length-1]; //get zero
+                    let newVal = sumWrapper.textContent.replace(getZero, ''); //replace zero with empty string    
+                    sumWrapper.textContent = newVal; //display new val
+                } 
+            }            
+        }
+        
+        
+        //display negative sign if btn pressed was +/-
         if(val === '+/-'){
             val = '-';
-            e.target.disabled = true;
-        }
+            plus_minus.firstChild.disabled = true; //disable +/- btn
+        }        
+       
         
         
         if(val === "C"){ //if 'cancel' btn pressed - reset sum
@@ -75,16 +112,19 @@ class Btn extends React.Component{
             return;
         } // end of cancel IF
         
-        if(val === "="){ //if equals sign pressed, calculate current sum 
+        if(val === "="){ //if equals sign pressed, calculate current sum - aslong as last character not a special character (see returnVals obj below)
+            
             //if last btn pressed is a special char - do not run calculate
             let length = sumWrapper.textContent.length; //get length of sum
             let lastChar = sumWrapper.textContent[length-1]; //store last character in sum
+            
             //store special chars in obj
             let returnVals = {
                 plus: "+",
                 minus: "-",
                 multiply: "*",
-                divide: "/"
+                divide: "/",
+                decimal:"."
             }
             
             for(let key in returnVals){
@@ -101,8 +141,11 @@ class Btn extends React.Component{
             return;
         } //end of equals IF
         
+        
         sumWrapper.textContent += val; //display sum in sumWrapper
     }
+    
+    
     
     
     //calculate sum and display answer in DOM
@@ -111,10 +154,13 @@ class Btn extends React.Component{
         let sumWrapper = document.getElementById('sum'); //cache location of sum        
         let getCurrentSum = sumWrapper.textContent; //get current sum
         let answer = eval(getCurrentSum); //work out sum
+        answer = parseFloat(answer);
         
-        displaySum.textContent = parseFloat(answer); //display answer
+        displaySum.textContent = answer; //display answer
+        sumWrapper.textContent = ''; //remove text from sum wrapper
     }
     
+    //render function
     render(){
         return(
             <div className={this.props.class}>
