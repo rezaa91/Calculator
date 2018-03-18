@@ -5,9 +5,6 @@ import React from 'react';
 //cache dom positions globally to component to stop having to cache in each code block
 
 
-
-
-
 class Btn extends React.Component{
     
     //get value of btn pressed by user
@@ -17,6 +14,9 @@ class Btn extends React.Component{
         let displayAnswer = document.getElementById('answer'); //cache answer location
         let specialChar = document.getElementsByClassName('special_char'); //cache DOM location of special characters
         let plus_minus = document.getElementsByClassName('plus_minus')[0]; //cache DOM location of +/- char
+        
+        
+        
         
         //revert sum value back to zero
         if(displayAnswer.textContent !== "0"){
@@ -53,6 +53,24 @@ class Btn extends React.Component{
         }
         plus_minus.firstChild.disabled = false;
         
+        
+        
+        
+        //only allow one decimal point per number
+        if(btnVal === '.'){
+            let regExp = /[^0-9]./g; //this reg exp finds individual numbers
+            let getCurrentSum = sumWrapper.textContent; //get current sum value
+            let seperators = ['+','-','*','/']; //split current sum value by the values in this array
+            getCurrentSum = getCurrentSum.split(new RegExp('[-+*/?]','g')); //split current sum by seperators
+            
+            let ifDec = regExp.test(getCurrentSum[getCurrentSum.length-1]); //if individual number, matches regExp var 
+            
+            if(ifDec){
+                return; //return
+            }
+        }
+        
+        
 
         this.printVal(btnVal); //print value to sumWrapper
     }
@@ -66,7 +84,7 @@ class Btn extends React.Component{
         let displaySum = document.getElementById('answer'); //cache DOM location of answer
         let specialChar = document.getElementsByClassName('special_char'); //cache DOM location of special characters
         let plus_minus = document.getElementsByClassName('plus_minus')[0]; //cache DOM location of +/- char
-        let length = sumWrapper.textContent.length;
+        let length = sumWrapper.textContent.length; //get length of sum wrapper
         
         //disable special characters if value is a special character 
         for(let i = 0; i<specialChar.length; i++){
@@ -102,10 +120,11 @@ class Btn extends React.Component{
         if(val === '+/-'){
             val = '-';
             plus_minus.firstChild.disabled = true; //disable +/- btn
-        }        
+        }
+        
+        
        
-        
-        
+
         if(val === "C"){ //if 'cancel' btn pressed - reset sum
             sumWrapper.textContent = ""; //remove value from sum
             displaySum.textContent = 0; //revert sum back to init value
@@ -141,7 +160,7 @@ class Btn extends React.Component{
             return;
         } //end of equals IF
         
-        
+
         sumWrapper.textContent += val; //display sum in sumWrapper
     }
     
