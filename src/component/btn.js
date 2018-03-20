@@ -76,6 +76,26 @@ class Btn extends React.Component{
         }
         
         
+        
+        //if zero is entered prior to another number, and number is not a decimal, replace zero with new inputted value
+        let numbers = ['1','2','3','4','5','6','7','8','9']; //store all numbers in arr
+        let chars = ['+','-','*','/','+/-',undefined]; //store all possible chars to appear 2 before 0 which will need replacing
+    
+        for(let i = 0; i<numbers.length; i++){
+            //if value is a number, and the last inputted char was a zero
+            if(btnVal === numbers[i] && sumWrapper.textContent[sumWrapper.textContent.length - 1] === '0'){
+                for(let j = 0; j<chars.length; j++){
+                    //if the char before the zero was any of the arr char values, replace the zero with the current btnVal
+                    if(sumWrapper.textContent[sumWrapper.textContent.length-2] === chars[j]){
+                        let newString = sumWrapper.textContent.substring(0, sumWrapper.textContent.lastIndexOf('0')) + btnVal + sumWrapper.textContent.substring(sumWrapper.textContent.lastIndexOf('0')+1);
+                        sumWrapper.textContent = newString.substring(0,newString.length-1);
+                    }
+                }
+            }
+        }
+        
+        
+        
 
         this.printVal(btnVal); //print value to sumWrapper
     }
@@ -86,7 +106,6 @@ class Btn extends React.Component{
     //print value of btn pressed to sum wrapper
     printVal = (val) => {
         let sumWrapper = document.getElementById('sum'); //cache DOM location to place sum
-        let displaySum = document.getElementById('answer'); //cache DOM location of answer
         let specialChar = document.getElementsByClassName('special_char'); //cache DOM location of special characters
         let plus_minus = document.getElementsByClassName('plus_minus')[0]; //cache DOM location of +/- char
         let length = sumWrapper.textContent.length; //get length of sum wrapper
@@ -110,19 +129,20 @@ class Btn extends React.Component{
             val = '-';
             plus_minus.firstChild.disabled = true; //disable +/- btn
         }
+
         
-        
-       
 
         if(val === "C"){ //if 'cancel' btn pressed - reset sum
             sumWrapper.textContent = ""; //remove value from sum
-            displaySum.textContent = 0; //revert sum back to init value
-            return;
+            this.init(); //run init function
+            return; //return
         } // end of cancel IF
+        
+        
+        
         
         if(val === "="){ //if equals sign pressed, calculate current sum - aslong as last character not a special character (see returnVals obj below)
             
-            //if last btn pressed is a special char - do not run calculate
             let length = sumWrapper.textContent.length; //get length of sum
             let lastChar = sumWrapper.textContent[length-1]; //store last character in sum
             
@@ -135,6 +155,7 @@ class Btn extends React.Component{
                 decimal:"."
             }
             
+            //if last btn pressed is a special char - do not run calculate
             for(let key in returnVals){
                 let obj = returnVals[key];
                 for(let prop in obj){
@@ -144,8 +165,9 @@ class Btn extends React.Component{
                 }
             }
             
+            
             this.calculateSum(); //run calculateSum function
-            sumWrapper.textContent = ""; //remove value
+            sumWrapper.textContent = ""; //remove value from sum wrapper
             return;
         } //end of equals IF
         
