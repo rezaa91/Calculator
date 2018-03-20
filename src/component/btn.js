@@ -7,21 +7,32 @@ import React from 'react';
 
 class Btn extends React.Component{
     
-    //get value of btn pressed by user
-    getValue = (e) => { //get value from which ever btn pressed
-        let btnVal = e.target.textContent; //store btn value in var
-        let sumWrapper = document.getElementById('sum'); //cache sum wrapper location
+    //init functio
+    init = () => {
         let displayAnswer = document.getElementById('answer'); //cache answer location
         let specialChar = document.getElementsByClassName('special_char'); //cache DOM location of special characters
         let plus_minus = document.getElementsByClassName('plus_minus')[0]; //cache DOM location of +/- char
         
+        //reset answer value
+        displayAnswer.textContent = 0;
         
         
-        
-        //revert sum value back to zero
-        if(displayAnswer.textContent !== "0"){
-            displayAnswer.textContent = 0;
+        //undisable all special characters
+        for(let i = 0; i<specialChar.length; i++){
+            specialChar[i].firstChild.disabled = false;
         }
+        plus_minus.firstChild.disabled = false;
+    }
+    
+    
+    //get value of btn pressed by user
+    getValue = (e) => { //get value from which ever btn pressed
+        //run init function
+        this.init();
+        
+        //store btn value and sum wrapper in var
+        let btnVal = e.target.textContent; //store btn value in var
+        let sumWrapper = document.getElementById('sum'); //cache sum wrapper location
         
         
         //store special characters in obj
@@ -31,11 +42,9 @@ class Btn extends React.Component{
             multiply: "*",
             divide: "/",
             equals: "=",
-            decimal: '.',
-            zero: '0'
+            decimal: '.'
         }
-        
-        
+
         //do not display special char in sumWrapper if no previous number has been entered
         for(let key in returnVals){
             let obj = returnVals[key];
@@ -45,22 +54,12 @@ class Btn extends React.Component{
                 }
             }
         }
-        
-        
-        //undisable all special characters
-        for(let i = 0; i<specialChar.length; i++){
-            specialChar[i].firstChild.disabled = false;
-        }
-        plus_minus.firstChild.disabled = false;
-        
-        
-        
+
         
         //only allow one decimal point per number
         if(btnVal === '.'){
             let regExp = /[^0-9]./g; //this reg exp finds individual numbers
             let getCurrentSum = sumWrapper.textContent; //get current sum value
-            let seperators = ['+','-','*','/']; //split current sum value by the values in this array
             getCurrentSum = getCurrentSum.split(new RegExp('[-+*/?]','g')); //split current sum by seperators
             
             let ifDec = regExp.test(getCurrentSum[getCurrentSum.length-1]); //if individual number, matches regExp var 
@@ -68,6 +67,12 @@ class Btn extends React.Component{
             if(ifDec){
                 return; //return
             }
+        }
+        
+        
+        //only allow 1 zero to be entered on start up
+        if(btnVal === '0' && sumWrapper.textContent[sumWrapper.textContent.length-1] === '0' && sumWrapper.textContent.length <2){
+            return;
         }
         
         
@@ -86,33 +91,17 @@ class Btn extends React.Component{
         let plus_minus = document.getElementsByClassName('plus_minus')[0]; //cache DOM location of +/- char
         let length = sumWrapper.textContent.length; //get length of sum wrapper
         
-        //disable special characters if value is a special character 
+        //disable special characters if value is a special character - as 2+ special characters can not appear in a row
         for(let i = 0; i<specialChar.length; i++){
             if(val === specialChar[i].firstChild.textContent){
                 for(let i = 0; i<specialChar.length; i++){
                     specialChar[i].firstChild.disabled = true;
                 }
             }
-            //if btn pressed after special char is a zero - do not allow any more than 1 zero being pressed and return
-            if(val === '0' && sumWrapper.textContent[length-2] === specialChar[i].firstChild.textContent && sumWrapper.textContent[length-1] === '0'){
+            //if btn pressed after special char is a zero - do not allow any more than 1 zero being pressed and return (unless special character is a decimal point)
+            if(val === '0' && sumWrapper.textContent[length-2] !== specialChar[4].firstChild.textContent && sumWrapper.textContent[length-2] === specialChar[i].firstChild.textContent && sumWrapper.textContent[length-1] === '0'){
                 return;
             }
-        }
-        
-        
-        
-        for(let i = 0; i < specialChar.length; i++){
-            //if current input val is not a special character incl zero - continue if statement
-            if(val !== specialChar[i].firstChild.textContent && val !== document.getElementsByClassName('equals')[0].firstChild.textContent){
-                
-                //replace zero with new val if cur value is not zero, last btn pressed was zero, and prior to last btn pressed was special char                
-                if(val !== '0' && sumWrapper.textContent[length-1] === '0' && sumWrapper.textContent[length-2] === specialChar[i].firstChild.textContent){
-                    //replace zero with new val
-                    let getZero = sumWrapper.textContent[length-1]; //get zero
-                    let newVal = sumWrapper.textContent.replace(getZero, ''); //replace zero with empty string    
-                    sumWrapper.textContent = newVal; //display new val
-                } 
-            }            
         }
         
         
@@ -179,6 +168,10 @@ class Btn extends React.Component{
         sumWrapper.textContent = ''; //remove text from sum wrapper
     }
     
+    
+    
+    
+    
     //render function
     render(){
         return(
@@ -190,5 +183,6 @@ class Btn extends React.Component{
 }
 
 
+//export btn
 export default Btn;
 
