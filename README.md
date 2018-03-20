@@ -12,4 +12,5 @@
 * Git
 
 ###### Screenshots:
-<img src="img/screenshot-1" />
+<img src="img/screenshot-1" width="300px">
+<img src="img/screenshot-2.jpg" width="300px" >
