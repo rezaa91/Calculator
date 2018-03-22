@@ -7,11 +7,16 @@ import React from 'react';
 
 class Btn extends React.Component{
     
-    //init functio
+    //init function
     init = () => {
         let displayAnswer = document.getElementById('answer'); //cache answer location
         let specialChar = document.getElementsByClassName('special_char'); //cache DOM location of special characters
         let plus_minus = document.getElementsByClassName('plus_minus')[0]; //cache DOM location of +/- char
+        
+        //init styling for answer
+        displayAnswer.style.fontSize = '50px';
+        displayAnswer.style.paddingTop = '0px';
+        
         
         //reset answer value
         displayAnswer.textContent = 0;
@@ -34,70 +39,76 @@ class Btn extends React.Component{
         let btnVal = e.target.textContent; //store btn value in var
         let sumWrapper = document.getElementById('sum'); //cache sum wrapper location
         
-        
-        //store special characters in obj
-        let returnVals = {
-            plus: "+",
-            minus: "-",
-            multiply: "*",
-            divide: "/",
-            equals: "=",
-            decimal: '.'
-        }
-
-        //do not display special char in sumWrapper if no previous number has been entered
-        for(let key in returnVals){
-            let obj = returnVals[key];
-            for(let prop in obj){
-                if((sumWrapper.textContent === "" && btnVal === obj[prop])){ //'return' if special char entered before digit
-                    return;
-                }
+        //run below code if sum length not exceeded, and the btn val does not equal 'C' as this clears the sum. Also if the btnVal = '=', run code as this will execute the calculate method
+        if(btnVal !== 'C' && sumWrapper.textContent.length < 25 || btnVal === '='){
+            //store special characters in obj
+            let returnVals = {
+                plus: "+",
+                minus: "-",
+                multiply: "*",
+                divide: "/",
+                equals: "=",
+                decimal: '.'
             }
-        }
 
-        
-        //only allow one decimal point per number
-        if(btnVal === '.'){
-            let regExp = /[^0-9]./g; //this reg exp finds individual numbers
-            let getCurrentSum = sumWrapper.textContent; //get current sum value
-            getCurrentSum = getCurrentSum.split(new RegExp('[-+*/?]','g')); //split current sum by seperators
-            
-            let ifDec = regExp.test(getCurrentSum[getCurrentSum.length-1]); //if individual number, matches regExp var 
-            
-            if(ifDec){
-                return; //return
-            }
-        }
-        
-        
-        //only allow 1 zero to be entered on start up
-        if(btnVal === '0' && sumWrapper.textContent[sumWrapper.textContent.length-1] === '0' && sumWrapper.textContent.length <2){
-            return;
-        }
-        
-        
-        
-        //if zero is entered prior to another number, and number is not a decimal, replace zero with new inputted value
-        let numbers = ['1','2','3','4','5','6','7','8','9']; //store all numbers in arr
-        let chars = ['+','-','*','/','+/-',undefined]; //store all possible chars to appear 2 before 0 which will need replacing
-    
-        for(let i = 0; i<numbers.length; i++){
-            //if value is a number, and the last inputted char was a zero
-            if(btnVal === numbers[i] && sumWrapper.textContent[sumWrapper.textContent.length - 1] === '0'){
-                for(let j = 0; j<chars.length; j++){
-                    //if the char before the zero was any of the arr char values, replace the zero with the current btnVal
-                    if(sumWrapper.textContent[sumWrapper.textContent.length-2] === chars[j]){
-                        let newString = sumWrapper.textContent.substring(0, sumWrapper.textContent.lastIndexOf('0')) + btnVal + sumWrapper.textContent.substring(sumWrapper.textContent.lastIndexOf('0')+1);
-                        sumWrapper.textContent = newString.substring(0,newString.length-1);
+            //do not display special char in sumWrapper if no previous number has been entered
+            for(let key in returnVals){
+                let obj = returnVals[key];
+                for(let prop in obj){
+                    if((sumWrapper.textContent === "" && btnVal === obj[prop])){ //'return' if special char entered before digit
+                        return;
                     }
                 }
             }
-        }
-        
-        
-        
 
-        this.printVal(btnVal); //print value to sumWrapper
+
+            //only allow one decimal point per number
+            if(btnVal === '.'){
+                let regExp = /[^0-9]./g; //this reg exp finds individual numbers
+                let getCurrentSum = sumWrapper.textContent; //get current sum value
+                getCurrentSum = getCurrentSum.split(new RegExp('[-+*/?]','g')); //split current sum by seperators
+
+                let ifDec = regExp.test(getCurrentSum[getCurrentSum.length-1]); //if individual number, matches regExp var 
+
+                if(ifDec){
+                    return; //return
+                }
+            }
+
+
+            //only allow 1 zero to be entered on start up
+            if(btnVal === '0' && sumWrapper.textContent[sumWrapper.textContent.length-1] === '0' && sumWrapper.textContent.length <2){
+                return;
+            }
+
+
+
+            //if zero is entered prior to another number, and number is not a decimal, replace zero with new inputted value
+            let numbers = ['1','2','3','4','5','6','7','8','9']; //store all numbers in arr
+            let chars = ['+','-','*','/','+/-',undefined]; //store all possible chars to appear 2 before 0 which will need replacing
+
+            for(let i = 0; i<numbers.length; i++){
+                //if value is a number, and the last inputted char was a zero
+                if(btnVal === numbers[i] && sumWrapper.textContent[sumWrapper.textContent.length - 1] === '0'){
+                    for(let j = 0; j<chars.length; j++){
+                        //if the char before the zero was any of the arr char values, replace the zero with the current btnVal
+                        if(sumWrapper.textContent[sumWrapper.textContent.length-2] === chars[j]){
+                            let newString = sumWrapper.textContent.substring(0, sumWrapper.textContent.lastIndexOf('0')) + btnVal + sumWrapper.textContent.substring(sumWrapper.textContent.lastIndexOf('0')+1);
+                            sumWrapper.textContent = newString.substring(0,newString.length-1);
+                        }
+                    }
+                }
+            }
+            this.printVal(btnVal); //print value to sumWrapper
+            
+            
+        //if btnVal = 'C', clear the sumWrapper textContent    
+        }else if(btnVal === 'C'){
+            
+            sumWrapper.textContent = '';
+        }
+
+        
     }
     
     
@@ -184,6 +195,16 @@ class Btn extends React.Component{
         let sumWrapper = document.getElementById('sum'); //cache location of sum        
         let getCurrentSum = sumWrapper.textContent; //get current sum
         let answer = eval(getCurrentSum); //work out sum
+        
+        if(answer.toString().length > 10){
+            displaySum.style.fontSize = '25px';
+            displaySum.style.paddingTop = '20px';
+        }else{
+            displaySum.style.fontSize = '50px';
+            displaySum.style.paddingTop = '0px';
+        }
+        
+        
         answer = parseFloat(answer);
         
         displaySum.textContent = answer; //display answer
