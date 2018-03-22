@@ -40,7 +40,7 @@ class Btn extends React.Component{
         let sumWrapper = document.getElementById('sum'); //cache sum wrapper location
         
         //run below code if sum length not exceeded, and the btn val does not equal 'C' as this clears the sum. Also if the btnVal = '=', run code as this will execute the calculate method
-        if(btnVal !== 'C' && sumWrapper.textContent.length < 25 || btnVal === '='){
+        if((btnVal !== 'C' && sumWrapper.textContent.length < 25) || (btnVal === '=')){
             //store special characters in obj
             let returnVals = {
                 plus: "+",
@@ -106,9 +106,7 @@ class Btn extends React.Component{
         }else if(btnVal === 'C'){
             
             sumWrapper.textContent = '';
-        }
-
-        
+        }        
     }
     
     
@@ -136,9 +134,15 @@ class Btn extends React.Component{
         
         
         //display negative sign if btn pressed was +/-
-        if(val === '+/-'){
+        if(val === '+/-' && sumWrapper.textContent[sumWrapper.textContent.length-1]!=='-'){
             val = '-';
             plus_minus.firstChild.disabled = true; //disable +/- btn
+        }else if(val === '+/-'){
+            val = '';
+        }
+        //dont allow minus btn to be pressed if last val is +/-
+        if(val === specialChar[2].firstChild.textContent && sumWrapper.textContent[sumWrapper.textContent.length-1] === '-'){
+            return;
         }
 
         
